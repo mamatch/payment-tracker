@@ -10,3 +10,6 @@ With this application, we want to provide a way to automate those moves
 
 ## Architecture
 ![arch.png](arch.png)
+
+## DB Design
+![er.png](er.png)
