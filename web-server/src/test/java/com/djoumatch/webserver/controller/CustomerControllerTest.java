@@ -1,13 +1,17 @@
 package com.djoumatch.webserver.controller;
 
+import com.djoumatch.webserver.dto.CustomerRequest;
 import com.djoumatch.webserver.model.Customer;
 import com.djoumatch.webserver.model.CustomerType;
 import com.djoumatch.webserver.repository.CustomerRepository;
 import com.djoumatch.webserver.repository.CustomerTypeRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,6 +33,9 @@ class CustomerControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -67,5 +74,29 @@ class CustomerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/customer"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json("[{\"name\":\"dej\",\"location\":\"dla\",\"customerType\":\"Frip\"}]"));
+    }
+
+    /**
+     * Test the /api/customer to add a user
+     * - Create a customer type
+     * - Create a request
+     * - Check the response status after calling api
+     * @throws Exception
+     */
+    @Test
+    void shouldAddTheCustomer() throws Exception {
+        CustomerType customerType = new CustomerType("Boutique");
+        customerTypeRepository.save(customerType);
+        CustomerRequest customerRequest = CustomerRequest.builder()
+                .name("dej1")
+                .location("Dla")
+                .customerType("Boutique")
+                .build();
+
+        String customerRequestString = objectMapper.writeValueAsString(customerRequest);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/customer")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(customerRequestString))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 }

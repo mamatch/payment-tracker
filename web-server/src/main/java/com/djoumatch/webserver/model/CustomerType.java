@@ -20,4 +20,8 @@ public class CustomerType {
     private String label;
     @OneToMany
     private List<Customer> customers;
+
+    public CustomerType(String label) {
+        this.label = label;
+    }
 }
